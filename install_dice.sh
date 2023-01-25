@@ -1,42 +1,37 @@
 # Check if /opt/ros/noetic/setup.bash exists, if it doesn't, ask user to install ROS Noetic and exit
 UNDERLAY_SETUP='/opt/ros/noetic/setup.bash'
-if [ ! -f "$UNDERLAY_SETUP" ]; then
-  echo "ROS Noetic is not installed. Please install ROS Noetic and try again."
-  exit 1
-fi
+require_file "$UNDERLAY_SETUP" "ROS Noetic is not installed. Please install ROS Noetic and try again."
 
 echo "Initializing workspace..."
+
 # Source the ROS distribution from the underlay variable
 source "$UNDERLAY_SETUP"
+
 # Installation (bash)
-FILE="${HOME}/.bashrc"
-# Check if FILE exists, if it doesn't, create it
-if [ ! -f "$FILE" ]; then
-  touch "$FILE"
-fi
-LINE="source $UNDERLAY_SETUP"
-grep -qF -- "$LINE" "$FILE" || echo "$LINE" >> "$FILE"
+require_or_create_file "$BASHRC"
+write_bashrc "source $UNDERLAY_SETUP"
+
 # Check if "./catkin_ws" exists, if it doesn't, create it
-if [ ! -d "./catkin_ws" ]; then
-  mkdir ./catkin_ws
-fi
-# Source /opt/ros/noetic/setup.bash
-source "$UNDERLAY_SETUP"
+OVERLAY_FOLDER='./catkin_ws'
+require_or_create_folder "$OVERLAY_FOLDER"
+
 # CD into it and run catkin_make
 cd ./catkin_ws
+
 # Make the src folder if it doesn't exist
-if [ ! -d "./src" ]; then
-  mkdir ./src
-fi
+require_or_create_folder "./src"
 catkin_make
+
 # Get the relative path of "catkin_ws/devel/setup.bash" and add it to .bashrc
 OVERLAY_SETUP="$(realpath ./devel/setup.bash)"
-LINE="source $OVERLAY_SETUP"
-grep -qF -- "$LINE" "$FILE" || echo "$LINE" >> "$FILE"
+require_file "$OVERLAY_SETUP" "catkin_make failed. Please try again."
+write_bashrc "source $OVERLAY_SETUP"
+
 # Source the new .bashrc
-source "$FILE"
+source "$BASHRC"
 
 echo "Installing dependencies..."
+
 # Clone the Github repos into the src folder
 cd ./src
 git clone -b noetic-devel https://github.com/ROBOTIS-GIT/DynamixelSDK.git
@@ -48,13 +43,15 @@ git clone http://github.com/ros-perception/slam_gmapping.git
 git clone http://github.com/ros-planning/navigation.git
 git clone https://github.com/ros-planning/navigation_msgs
 git clone http://github.com/ros/geometry2.git
-cd ..
+
 # Run catkin_make again
+cd ..
 catkin_make
 
 echo "Dependencies installed!"
 
 # Set up the environment variables
+
 # Prompt user for the Turtlebot3 model: 1 for "burger", 2 for "waffle_pi", loop until valid input is given
 echo "Please select the Turtlebot3 model:"
 echo "1. Burger"
@@ -74,23 +71,27 @@ fi
 # Prompt user for turtlebot_name
 read -p "Enter the name of your turtlebot: " turtlebot_name
 
-LINE="export TURTLEBOT3_MODEL=$choice"
-grep -qF -- "$LINE" "$FILE" || echo "$LINE" >> "$FILE"
-LINE="export ROS_MASTER_URI=https://$turtlebot_name:11311"
-grep -qF -- "$LINE" "$FILE" || echo "$LINE" >> "$FILE"
-LINE="export ROS_HOSTNAME=$HOSTNAME"
-grep -qF -- "$LINE" "$FILE" || echo "$LINE" >> "$FILE"
+write_bashrc "export TURTLEBOT3_MODEL=$choice"
+write_bashrc "export ROS_MASTER_URI=http://$turtlebot_name:11311"
+write_bashrc "export TURTLEBOT_NAME=$turtlebot_name"
+write_bashrc "export ROS_HOSTNAME=$HOSTNAME"
+
+MACRO_PATH="$(realpath ./macros.sh)"
+write_bashrc "source $MACRO_PATH"
 
 echo "Environment variables set!"
 
 # Run the new .bashrc
-source "$FILE"
+source "$BASHRC"
 
 # # Turtlebot3 setup
-# echo "Next we will set up the Turtlebot3. Please make sure the Turtlebot3 is turned on and in the same network."
+echo "Next we will set up the Turtlebot3. Please make sure the Turtlebot3 is turned on and in the same network. Press any key to continue..."
+read -n 1 -s
 
-# # SSH into the Turtlebot3 using username "pi" and password "turtlebot" and add the following lines to the .bashrc file:
-# # sudo ntpdate extntp0.inf.ed.ac.uk
+# Send "install_turtlebot.sh" and "helpers.sh" to $turtlebot_name using scp
+echo "Moving install_turtlebot.sh and helpers.sh to $turtlebot_name... Please enter the password for user pi on $turtlebot_name when prompted."
+scp install_turtlebot.sh pi@$turtlebot_name:~/
+scp helpers.sh pi@$turtlebot_name:~/
+ssh pi@$turtlebot_name "chmod +x install_turtlebot.sh && ./install_turtlebot.sh"
 
-# LINE="sudo ntpdate extntp0.inf.ed.ac.uk"
-# ssh 
+echo "Turtlebot3 setup complete!"
