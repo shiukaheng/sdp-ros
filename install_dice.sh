@@ -13,49 +13,44 @@ source "$UNDERLAY_SETUP"
 require_or_create_file "$BASHRC"
 write_bashrc "source $UNDERLAY_SETUP"
 
-# If no ".dependencies_installed" exists, install the dependencies
-if [ ! -f ".dependencies_installed" ]; then
-  # Check if "./catkin_ws" exists, if it doesn't, create it
-  OVERLAY_FOLDER='./catkin_ws'
-  require_or_create_folder "$OVERLAY_FOLDER"
+# Check if "./catkin_ws" exists, if it doesn't, create it
+OVERLAY_FOLDER='./catkin_ws'
+require_or_create_folder "$OVERLAY_FOLDER"
 
-  # CD into it and run catkin_make
-  cd ./catkin_ws
+# CD into it and run catkin_make
+cd ./catkin_ws
 
-  # Make the src folder if it doesn't exist
-  require_or_create_folder "./src"
-  catkin_make
+# Make the src folder if it doesn't exist
+require_or_create_folder "./src"
+catkin_make
 
-  # Get the relative path of "catkin_ws/devel/setup.bash" and add it to .bashrc
-  OVERLAY_SETUP="$(realpath ./devel/setup.bash)"
-  require_file "$OVERLAY_SETUP" "catkin_make failed. Please try again."
-  write_bashrc "source $OVERLAY_SETUP"
+# Get the relative path of "catkin_ws/devel/setup.bash" and add it to .bashrc
+OVERLAY_SETUP="$(realpath ./devel/setup.bash)"
+require_file "$OVERLAY_SETUP" "catkin_make failed. Please try again."
 
-  # Source the new .bashrc
-  source "$BASHRC"
+# Source the new .bashrc
+source "$BASHRC"
 
-  announce "Installing dependencies..."
+announce "Installing dependencies..."
 
-  # Clone the Github repos into the src folder
-  cd ./src
-  git clone -b noetic-devel https://github.com/ROBOTIS-GIT/DynamixelSDK.git
-  git clone -b noetic-devel https://github.com/ROBOTIS-GIT/turtlebot3_msgs.git
-  git clone -b noetic-devel https://github.com/ROBOTIS-GIT/turtlebot3.git
-  git clone -b noetic-devel https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git
-  git clone http://github.com/ros-perception/openslam_gmapping.git
-  git clone http://github.com/ros-perception/slam_gmapping.git
-  git clone http://github.com/ros-planning/navigation.git
-  git clone https://github.com/ros-planning/navigation_msgs
-  git clone http://github.com/ros/geometry2.git
-  cd ..
-  # Run catkin_make again
-  catkin_make
-  # Make .dependencies_installed hidden
-  chmod 600 ".dependencies_installed"
-  announce "Dependencies installed!"
-  cd ..
-  touch ".dependencies_installed"
-fi
+# Clone the Github repos into the src folder
+cd ./src
+git clone -b noetic-devel https://github.com/ROBOTIS-GIT/DynamixelSDK.git
+git clone -b noetic-devel https://github.com/ROBOTIS-GIT/turtlebot3_msgs.git
+git clone -b noetic-devel https://github.com/ROBOTIS-GIT/turtlebot3.git
+git clone -b noetic-devel https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git
+git clone http://github.com/ros-perception/openslam_gmapping.git
+git clone http://github.com/ros-perception/slam_gmapping.git
+git clone http://github.com/ros-planning/navigation.git
+git clone https://github.com/ros-planning/navigation_msgs
+git clone http://github.com/ros/geometry2.git
+cd ..
+# Run catkin_make again
+catkin_make
+# Make .dependencies_installed hidden
+chmod 600 ".dependencies_installed"
+announce "Dependencies installed!"
+cd ..
 
 # Set up the environment variables
 
