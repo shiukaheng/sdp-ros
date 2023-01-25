@@ -13,29 +13,29 @@ source "$UNDERLAY_SETUP"
 require_or_create_file "$BASHRC"
 write_bashrc "source $UNDERLAY_SETUP"
 
-# Check if "./catkin_ws" exists, if it doesn't, create it
-OVERLAY_FOLDER='./catkin_ws'
-require_or_create_folder "$OVERLAY_FOLDER"
-
-# CD into it and run catkin_make
-cd ./catkin_ws
-
-# Make the src folder if it doesn't exist
-require_or_create_folder "./src"
-catkin_make
-
-# Get the relative path of "catkin_ws/devel/setup.bash" and add it to .bashrc
-OVERLAY_SETUP="$(realpath ./devel/setup.bash)"
-require_file "$OVERLAY_SETUP" "catkin_make failed. Please try again."
-write_bashrc "source $OVERLAY_SETUP"
-
-# Source the new .bashrc
-source "$BASHRC"
-
-echo "Installing dependencies..."
-
 # If no ".dependencies_installed" exists, install the dependencies
 if [ ! -f ".dependencies_installed" ]; then
+  # Check if "./catkin_ws" exists, if it doesn't, create it
+  OVERLAY_FOLDER='./catkin_ws'
+  require_or_create_folder "$OVERLAY_FOLDER"
+
+  # CD into it and run catkin_make
+  cd ./catkin_ws
+
+  # Make the src folder if it doesn't exist
+  require_or_create_folder "./src"
+  catkin_make
+
+  # Get the relative path of "catkin_ws/devel/setup.bash" and add it to .bashrc
+  OVERLAY_SETUP="$(realpath ./devel/setup.bash)"
+  require_file "$OVERLAY_SETUP" "catkin_make failed. Please try again."
+  write_bashrc "source $OVERLAY_SETUP"
+
+  # Source the new .bashrc
+  source "$BASHRC"
+
+  echo "Installing dependencies..."
+
   # Clone the Github repos into the src folder
   cd ./src
   git clone -b noetic-devel https://github.com/ROBOTIS-GIT/DynamixelSDK.git
@@ -54,12 +54,9 @@ if [ ! -f ".dependencies_installed" ]; then
   touch ".dependencies_installed"
   # Make .dependencies_installed hidden
   chmod 600 ".dependencies_installed"
-  
+  echo "Dependencies installed!"
+  cd ..
 fi
-
-echo "Dependencies installed!"
-
-cd ..
 
 # Set up the environment variables
 
