@@ -1,7 +1,7 @@
 # Check if /opt/ros/noetic/setup.bash exists, if it doesn't, ask user to install ROS Noetic and exit
-UNDERLAY_SETUP='source /opt/ros/noetic/setup.bash'
-if [ ! -d "$UNDERLAY_SETUP" ]; then
-  echo "ROS Noetic is not installed, please install ROS Noetic and try again (or just use a DICE machine!)"
+UNDERLAY_SETUP='/opt/ros/noetic/setup.bash'
+if [ ! -f "$UNDERLAY_SETUP" ]; then
+  echo "ROS Noetic is not installed. Please install ROS Noetic and try again."
   exit 1
 fi
 
