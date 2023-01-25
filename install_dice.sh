@@ -4,7 +4,7 @@ source ./helpers.sh
 UNDERLAY_SETUP='/opt/ros/noetic/setup.bash'
 require_file "$UNDERLAY_SETUP" "ROS Noetic is not installed. Please install ROS Noetic and try again."
 
-echo "Initializing workspace..."
+announce "Initializing workspace..."
 
 # Source the ROS distribution from the underlay variable
 source "$UNDERLAY_SETUP"
@@ -34,7 +34,7 @@ if [ ! -f ".dependencies_installed" ]; then
   # Source the new .bashrc
   source "$BASHRC"
 
-  echo "Installing dependencies..."
+  announce "Installing dependencies..."
 
   # Clone the Github repos into the src folder
   cd ./src
@@ -54,19 +54,19 @@ if [ ! -f ".dependencies_installed" ]; then
   touch ".dependencies_installed"
   # Make .dependencies_installed hidden
   chmod 600 ".dependencies_installed"
-  echo "Dependencies installed!"
+  announce "Dependencies installed!"
   cd ..
 fi
 
 # Set up the environment variables
 
 # Prompt user for the Turtlebot3 model: 1 for "burger", 2 for "waffle_pi", loop until valid input is given
-echo "Please select the Turtlebot3 model:"
+announce "Please select the Turtlebot3 model:"
 echo "1. Burger"
 echo "2. Waffle Pi"
 read -p "Enter your choice: " choice
 while [ "$choice" != "1" ] && [ "$choice" != "2" ]; do
-  echo "Invalid input, please try again"
+  error "Invalid input, please try again"
   read -p "Enter your choice: " choice
 done
 # Set the choice to the appropriate model
@@ -87,18 +87,18 @@ write_bashrc "export ROS_HOSTNAME=$HOSTNAME"
 MACRO_PATH="$(realpath ./macros.sh)"
 write_bashrc "source $MACRO_PATH"
 
-echo "Environment variables set!"
+announce "Environment variables set!"
 
 # Run the new .bashrc
 source "$BASHRC"
 
 # # Turtlebot3 setup
-echo "Next we will set up the Turtlebot3. Please make sure the Turtlebot3 is turned on and in the same network. Press any key to continue..."
+announce "Next we will set up the Turtlebot3. Please make sure the Turtlebot3 is turned on and in the same network. Press any key to continue..."
 read -n 1 -s
 
 # Send "install_turtlebot.sh" and "helpers.sh" to $turtlebot_name using scp
-echo "Moving install_turtlebot.sh and helpers.sh to $turtlebot_name... Please enter the password for user pi on $turtlebot_name when prompted."
+announce "Moving install_turtlebot.sh and helpers.sh to $turtlebot_name... Please enter the password for user pi on $turtlebot_name when prompted."
 scp *.sh pi@$turtlebot_name:~/
 ssh pi@$turtlebot_name "chmod +x install_turtlebot.sh && ./install_turtlebot.sh"
 
-echo "Turtlebot3 setup complete!"
+announce "Turtlebot3 setup complete!"

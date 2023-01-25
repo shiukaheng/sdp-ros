@@ -1,5 +1,17 @@
 #!/bin/bash
 
+announce() {
+  TEXT="$1"
+  # Print in cyan bold
+  echo -e "\e[1;36m$TEXT\e[0m"
+}
+
+error() {
+  TEXT="$1"
+  # Print in red bold
+  echo -e "\e[1;31m$TEXT\e[0m"
+}
+
 # Get bashrc file path to variable
 BASHRC="${HOME}/.bashrc"
 
@@ -23,7 +35,7 @@ write_and_source_bashrc() {
 require_file() {
   FILE="$1"
   if [ ! -f "$FILE" ]; then
-    echo "$2"
+    error "$2"
     exit 1
   fi
 }
@@ -31,7 +43,7 @@ require_file() {
 require_folder() {
   FOLDER="$1"
   if [ ! -d "$FOLDER" ]; then
-    echo "$2"
+    error "$2"
     exit 1
   fi
 }
