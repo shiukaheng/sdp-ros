@@ -84,7 +84,7 @@ write_bashrc "export ROS_MASTER_URI=http://$turtlebot_name:11311"
 write_bashrc "export TURTLEBOT_NAME=$turtlebot_name"
 write_bashrc "export ROS_HOSTNAME=$HOSTNAME"
 
-MACRO_PATH="$(realpath ./macros.sh)"
+MACRO_PATH="$(realpath ../macros.sh)"
 write_bashrc "source $MACRO_PATH"
 
 announce "Environment variables set!"
