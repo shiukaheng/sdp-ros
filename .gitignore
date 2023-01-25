@@ -1,0 +1,14 @@
+# Gitignore dependencies
+
+catkin_ws/src/DynamixelSDK
+catkin_ws/src/geometry2
+catkin_ws/src/navigation
+catkin_ws/src/navigation_msgs
+catkin_ws/src/openslam_gmapping
+catkin_ws/src/turtlebot3
+catkin_ws/src/turtlebot3_msgs
+catkin_ws/src/turtlebot3_simulations
+catkin_ws/src/CMakeLists.txt
+
+catkin_ws/build
+catkin_ws/devel
