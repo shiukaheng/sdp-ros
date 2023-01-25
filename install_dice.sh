@@ -48,15 +48,18 @@ if [ ! -f ".dependencies_installed" ]; then
   git clone https://github.com/ros-planning/navigation_msgs
   git clone http://github.com/ros/geometry2.git
   cd ..
+  # Run catkin_make again
+  catkin_make
+  
   touch ".dependencies_installed"
   # Make .dependencies_installed hidden
   chmod 600 ".dependencies_installed"
+  
 fi
 
-# Run catkin_make again
-catkin_make
-
 echo "Dependencies installed!"
+
+cd ..
 
 # Set up the environment variables
 
@@ -98,8 +101,7 @@ read -n 1 -s
 
 # Send "install_turtlebot.sh" and "helpers.sh" to $turtlebot_name using scp
 echo "Moving install_turtlebot.sh and helpers.sh to $turtlebot_name... Please enter the password for user pi on $turtlebot_name when prompted."
-scp install_turtlebot.sh pi@$turtlebot_name:~/
-scp helpers.sh pi@$turtlebot_name:~/
+scp *.sh pi@$turtlebot_name:~/
 ssh pi@$turtlebot_name "chmod +x install_turtlebot.sh && ./install_turtlebot.sh"
 
 echo "Turtlebot3 setup complete!"
