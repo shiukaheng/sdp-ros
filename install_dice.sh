@@ -1,3 +1,5 @@
+source ./helpers.sh
+
 # Check if /opt/ros/noetic/setup.bash exists, if it doesn't, ask user to install ROS Noetic and exit
 UNDERLAY_SETUP='/opt/ros/noetic/setup.bash'
 require_file "$UNDERLAY_SETUP" "ROS Noetic is not installed. Please install ROS Noetic and try again."
@@ -32,20 +34,26 @@ source "$BASHRC"
 
 echo "Installing dependencies..."
 
-# Clone the Github repos into the src folder
-cd ./src
-git clone -b noetic-devel https://github.com/ROBOTIS-GIT/DynamixelSDK.git
-git clone -b noetic-devel https://github.com/ROBOTIS-GIT/turtlebot3_msgs.git
-git clone -b noetic-devel https://github.com/ROBOTIS-GIT/turtlebot3.git
-git clone -b noetic-devel https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git
-git clone http://github.com/ros-perception/openslam_gmapping.git
-git clone http://github.com/ros-perception/slam_gmapping.git
-git clone http://github.com/ros-planning/navigation.git
-git clone https://github.com/ros-planning/navigation_msgs
-git clone http://github.com/ros/geometry2.git
+# If no ".dependencies_installed" exists, install the dependencies
+if [ ! -f ".dependencies_installed" ]; then
+  # Clone the Github repos into the src folder
+  cd ./src
+  git clone -b noetic-devel https://github.com/ROBOTIS-GIT/DynamixelSDK.git
+  git clone -b noetic-devel https://github.com/ROBOTIS-GIT/turtlebot3_msgs.git
+  git clone -b noetic-devel https://github.com/ROBOTIS-GIT/turtlebot3.git
+  git clone -b noetic-devel https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git
+  git clone http://github.com/ros-perception/openslam_gmapping.git
+  git clone http://github.com/ros-perception/slam_gmapping.git
+  git clone http://github.com/ros-planning/navigation.git
+  git clone https://github.com/ros-planning/navigation_msgs
+  git clone http://github.com/ros/geometry2.git
+  cd ..
+  touch ".dependencies_installed"
+  # Make .dependencies_installed hidden
+  chmod 600 ".dependencies_installed"
+fi
 
 # Run catkin_make again
-cd ..
 catkin_make
 
 echo "Dependencies installed!"

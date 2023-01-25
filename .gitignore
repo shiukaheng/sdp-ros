@@ -12,3 +12,5 @@ catkin_ws/src/CMakeLists.txt
 
 catkin_ws/build
 catkin_ws/devel
+
+.dependencies_installed
