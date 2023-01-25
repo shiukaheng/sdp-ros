@@ -50,12 +50,11 @@ if [ ! -f ".dependencies_installed" ]; then
   cd ..
   # Run catkin_make again
   catkin_make
-  
-  touch ".dependencies_installed"
   # Make .dependencies_installed hidden
   chmod 600 ".dependencies_installed"
   announce "Dependencies installed!"
   cd ..
+  touch ".dependencies_installed"
 fi
 
 # Set up the environment variables
