@@ -48,4 +48,45 @@ cd ..
 # Run catkin_make again
 catkin_make
 
-echo "Installation complete!"
+echo "Dependencies installed!"
+
+# Set up the environment variables
+# Prompt user for the Turtlebot3 model: 1 for "burger", 2 for "waffle_pi", loop until valid input is given
+echo "Please select the Turtlebot3 model:"
+echo "1. Burger"
+echo "2. Waffle Pi"
+read -p "Enter your choice: " choice
+while [ "$choice" != "1" ] && [ "$choice" != "2" ]; do
+  echo "Invalid input, please try again"
+  read -p "Enter your choice: " choice
+done
+# Set the choice to the appropriate model
+if [ "$choice" == "1" ]; then
+  choice="burger"
+elif [ "$choice" == "2" ]; then
+  choice="waffle_pi"
+fi
+
+# Prompt user for turtlebot_name
+read -p "Enter the name of your turtlebot: " turtlebot_name
+
+LINE="export TURTLEBOT3_MODEL=$choice"
+grep -qF -- "$LINE" "$FILE" || echo "$LINE" >> "$FILE"
+LINE="export ROS_MASTER_URI=https://$turtlebot_name:11311"
+grep -qF -- "$LINE" "$FILE" || echo "$LINE" >> "$FILE"
+LINE="export ROS_HOSTNAME=$HOSTNAME"
+grep -qF -- "$LINE" "$FILE" || echo "$LINE" >> "$FILE"
+
+echo "Environment variables set!"
+
+# Run the new .bashrc
+source "$FILE"
+
+# # Turtlebot3 setup
+# echo "Next we will set up the Turtlebot3. Please make sure the Turtlebot3 is turned on and in the same network."
+
+# # SSH into the Turtlebot3 using username "pi" and password "turtlebot" and add the following lines to the .bashrc file:
+# # sudo ntpdate extntp0.inf.ed.ac.uk
+
+# LINE="sudo ntpdate extntp0.inf.ed.ac.uk"
+# ssh 
