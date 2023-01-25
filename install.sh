@@ -33,6 +33,10 @@ grep -qF -- "$LINE" "$FILE" || echo "$LINE" >> "$FILE"
 source "$FILE"
 
 echo "Installing dependencies..."
+# Make the src folder if it doesn't exist
+if [ ! -d "./src" ]; then
+  mkdir ./src
+fi
 # Clone the Github repos into the src folder
 cd ./src
 git clone -b noetic-devel https://github.com/ROBOTIS-GIT/DynamixelSDK.git
